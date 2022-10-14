@@ -1,0 +1,30 @@
+<!-- credit url : http://ordrespontane.blogspot.com/2018/01/html-form-to-google-sheet.html -->
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title></title>
+</head>
+<br>
+บันทึกข้อมูลผ่าน Website ไป Google Sheet 
+<br>
+<form id="myForm" action="https://script.google.com/macros/s/AKfycbxERXZNM8rZaQvYWG47cJE5KMym7INspQ2uOf5Pk5TJkj5SwUX0/exec"
+    <br>
+	ชื่อ-นามสกุล : <br>
+    <input type="text" name="firstname" style="width:200px"><br>
+         ส่วน/สาขา  : <br>
+    <input type="text" name="lastname" style="width:200px"><br>
+         <!--เเสนอซื้อ:<br>
+		 <input type="text" name="birth" style="width:200px"><br>-->
+	<label for="birth">สิ่งที่ขอซื้อเพิ่ม : </label>
+<select id="birth" name="birth">
+  <option value="เรือท้องแบน">เรือท้องแบน</option>
+  <option value="ฮิปโปโป">ฮิปโปโป</option>
+  <option value="หมีแพนด้า">หมีแพนด้า</option>
+  <option value="ฉลาม">ฉลาม</option>
+</select><br>
+
+	จำนวน (ตัวเลข)  :<br>
+    <input type="text" name="agenumber" style="width:200px"><br>
+    <br>
+    <input type="submit" id="mySubmit" value="Submit">
+</form>
+
