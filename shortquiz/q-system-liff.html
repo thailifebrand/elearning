@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+    <title>ระบบจองคิว</title>
+</head>
+<body>
+    <h1>ระบบจองคิว</h1>
+    <button onclick="bookQueue()">จองคิว</button>
+    <button onclick="cancelQueue()">ยกเลิกคิว</button>
+    <ul id="queue-list"></ul>
+
+    <script>
+        async function bookQueue() {
+            const userId = await getUserId();
+            const res = await fetch(`https://script.google.com/macros/s/AKfycby5819QLK1zuqs4_8VbyBOC8frmaY_VX1Afky-1oFjM5ZXaMN85WT615HpkIPXDszvG/exec?action=bookQueue&userId=${userId}`);
+            alert("จองคิวสำเร็จ!");
+        }
+
+        async function cancelQueue() {
+            const userId = await getUserId();
+            await fetch(`https://script.google.com/macros/s/AKfycby5819QLK1zuqs4_8VbyBOC8frmaY_VX1Afky-1oFjM5ZXaMN85WT615HpkIPXDszvG/exec?action=cancelQueue&userId=${userId}`);
+            alert("ยกเลิกคิวสำเร็จ!");
+        }
+
+        async function getUserId() {
+            await liff.init({ liffId: "YOUR_LIFF_ID" });
+            const profile = await liff.getProfile();
+            return profile.userId;
+        }
+
+        async function loadQueues() {
+            const res = await fetch("https://script.google.com/macros/s/AKfycby5819QLK1zuqs4_8VbyBOC8frmaY_VX1Afky-1oFjM5ZXaMN85WT615HpkIPXDszvG/exec?action=getQueues");
+            const queues = await res.json();
+            const queueList = document.getElementById("queue-list");
+            queueList.innerHTML = "";
+            queues.forEach(queue => {
+                const li = document.createElement("li");
+                li.textContent = `คิวที่ ${queue.queueNo} - สถานะ: ${queue.status}`;
+                queueList.appendChild(li);
+            });
+        }
+
+        loadQueues();
+    </script>
+</body>
+</html>
