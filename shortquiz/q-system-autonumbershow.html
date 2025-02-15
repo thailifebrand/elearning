@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบจองคิว</title>
+</head>
+<body>
+    <h1>📌 ระบบจองคิว</h1>
+    <button onclick="bookQueue()">📌 จองคิว</button>
+    <button onclick="cancelQueue()">❌ ยกเลิกคิว</button>
+
+    <h2>🔢 หมายเลขคิวของคุณ: <span id="current-queue">-</span></h2>
+
+    <h3>📋 รายการคิวที่จอง</h3>
+    <ul id="queue-list"></ul>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbx1YJVM-rIv-9XvgnYhW_3C0RH7WjnifD9cvgH7ADNA9Y9cdWXRcKe1eEsbFmPinjj6/exec";
+
+        async function bookQueue() {
+            const res = await fetch(`${API_URL}?action=bookQueue`);
+            const data = await res.json();
+            document.getElementById("current-queue").textContent = data.queueNo;
+            alert(`✅ จองคิวสำเร็จ! หมายเลขคิวของคุณคือ ${data.queueNo}`);
+            loadQueues();
+        }
+
+        async function cancelQueue() {
+            await fetch(`${API_URL}?action=cancelQueue`);
+            document.getElementById("current-queue").textContent = "-";
+            alert("❌ ยกเลิกคิวสำเร็จ!");
+            loadQueues();
+        }
+
+        async function loadQueues() {
+            const res = await fetch(`${API_URL}?action=getQueues`);
+            const queues = await res.json();
+            const queueList = document.getElementById("queue-list");
+            queueList.innerHTML = "";
+            queues.forEach(queue => {
+                const li = document.createElement("li");
+                li.textContent = `คิวที่ ${queue.queueNo} - สถานะ: ${queue.status}`;
+                queueList.appendChild(li);
+            });
+        }
+
+        loadQueues();
+    </script>
+</body>
+</html>
