@@ -7,8 +7,12 @@
 </head>
 <body>
     <h1>📌 ระบบจองคิว</h1>
+
+    <label for="customer-name">กรอกชื่อของคุณ:</label>
+    <input type="text" id="customer-name" placeholder="กรอกชื่อของคุณ">
+    
     <button onclick="bookQueue()">📌 จองคิว</button>
-    <button onclick="cancelQueue()">❌ ยกเลิกคิว</button>
+    <button onclick="cancelQueue()">❌ ยกเลิกคิว (ใช้จริงต้องเอาออก)</button>
 
     <h2>🔢 หมายเลขคิวของคุณ: <span id="current-queue">-</span></h2>
 
@@ -16,13 +20,19 @@
     <ul id="queue-list"></ul>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbx1YJVM-rIv-9XvgnYhW_3C0RH7WjnifD9cvgH7ADNA9Y9cdWXRcKe1eEsbFmPinjj6/exec";
+        const API_URL = "https://script.google.com/macros/s/AKfycby-KwfxYFeKrCfrIRI15liGCIODY6SfM0okPUisz-9bgKcb-0WcFXnIHExMoyUo2_Q/exec";
 
         async function bookQueue() {
-            const res = await fetch(`${API_URL}?action=bookQueue`);
+            const customerName = document.getElementById("customer-name").value.trim();
+            if (!customerName) {
+                alert("❗ กรุณากรอกชื่อก่อนจองคิว");
+                return;
+            }
+
+            const res = await fetch(`${API_URL}?action=bookQueue&name=${encodeURIComponent(customerName)}`);
             const data = await res.json();
             document.getElementById("current-queue").textContent = data.queueNo;
-            alert(`✅ จองคิวสำเร็จ! หมายเลขคิวของคุณคือ ${data.queueNo}`);
+            alert(`✅ จองคิวสำเร็จ! คุณ ${customerName} ได้คิวที่ ${data.queueNo}`);
             loadQueues();
         }
 
@@ -39,11 +49,26 @@
             const queueList = document.getElementById("queue-list");
             queueList.innerHTML = "";
             queues.forEach(queue => {
+                const formattedTime = formatThaiTime(queue.timestamp); // แปลงเวลาให้เป็นเวลาประเทศไทย
                 const li = document.createElement("li");
-                li.textContent = `คิวที่ ${queue.queueNo} - สถานะ: ${queue.status}`;
+                li.textContent = `คิวที่ ${queue.queueNo} - ชื่อ: ${queue.name} - สถานะ: ${queue.status} - เวลา: ${formattedTime}`;
                 queueList.appendChild(li);
             });
         }
+
+        // ฟังก์ชันแปลง timestamp เป็นเวลาประเทศไทย (GMT+7)
+        function formatThaiTime(timestamp) {
+            if (!timestamp) return "ไม่ระบุเวลา";
+            const date = new Date(timestamp);
+            return new Intl.DateTimeFormat('th-TH', {
+                year: 'numeric', month: 'long', day: 'numeric',
+                hour: '2-digit', minute: '2-digit', second: '2-digit',
+                timeZone: 'Asia/Bangkok'
+            }).format(date);
+        }
+
+        // โหลดรายการคิวอัตโนมัติทุก 2 นาที
+        setInterval(loadQueues, 120000);
 
         loadQueues();
     </script>
